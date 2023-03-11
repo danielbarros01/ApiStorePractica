@@ -1,30 +1,40 @@
-const faker = require('faker');
+const boom = require('@hapi/boom');
 
-class UserService{
-  constructor(){
-    this.users = [];
-    this.generate();
+const { models } = require('./../libs/sequelize');
+
+class UserService {
+  constructor() {}
+
+  async create(data) {
+    const newUser = await models.User.create(data);
+    return newUser;
   }
 
-  generate(){
-    const limit = 10;
+  async find() {
+    const rta = await models.User.findAll({
+      include: ['customer']
+    });
+    return rta;
+  }
 
-    for (let index = 0; index < limit; index++) {
-      this.users.push({
-        id: faker.datatype.uuid(),
-        name: faker.name.firstName(),
-        lastname: faker.name.lastName(),
-        age: faker.datatype.number({ max: 94 })
-      })
+  async findOne(id) {
+    const user = await models.User.findByPk(id);
+    if (!user) {
+      throw boom.notFound('user not found');
     }
+    return user;
   }
 
-  find(){
-    return this.users;
+  async update(id, changes) {
+    const user = await this.findOne(id);
+    const rta = await user.update(changes);
+    return rta;
   }
 
-  findOne(id){
-    return this.users.find(user => user.id === id);
+  async delete(id) {
+    const user = await this.findOne(id);
+    await user.destroy();
+    return { id };
   }
 }
 

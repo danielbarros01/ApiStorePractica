@@ -1,46 +1,23 @@
-//dtos o schemas es lo mismo
-//la responsabilidad de ellos es validar la data que nos envian del cliente
-
 const Joi = require('joi');
 
-const id =
-  Joi
-    .string()
-    .uuid();
+const id = Joi.number().integer();
+const email = Joi.string().email();
+const password = Joi.string().min(8);
+const role = Joi.string().min(5);
 
-const name =
-  Joi.string()
-    .min(3)
-    .max(15);
-
-const lastname =
-  Joi.string()
-    .min(3)
-    .max(15);
-
-const age =
-  Joi
-    .number()
-    .min(14)
-
-const createUserShema = Joi.object({
-  name: name.required(),
-  lastname: lastname.required(),
-  age: age.required()
+const createUserSchema = Joi.object({
+  email: email.required(),
+  password: password.required(),
+  role: role.required()
 });
 
-const updateUserShema = Joi.object({
-  name: name,
-  lastname: lastname,
-  age: age
+const updateUserSchema = Joi.object({
+  email: email,
+  role: role,
 });
 
-const getUserShema = Joi.object({
-  id: id.required()
+const getUserSchema = Joi.object({
+  id: id.required(),
 });
 
-module.exports = {
-  createUserShema,
-  updateUserShema,
-  getUserShema
-}
+module.exports = { createUserSchema, updateUserSchema, getUserSchema }

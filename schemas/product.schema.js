@@ -1,47 +1,48 @@
-//dtos o schemas es lo mismo
-//la responsabilidad de ellos es validar la data que nos envian del cliente
-
 const Joi = require('joi');
 
-const id =
-  Joi
-    .string()
-    .uuid();
+const id = Joi.number().integer();
+const name = Joi.string().min(3).max(15);
+const price = Joi.number().integer().min(10);
+const description = Joi.string().min(10);
+const image = Joi.string().uri();
+const categoryId = Joi.number().integer();
 
-const name =
-  Joi.string()
-    .min(3)
-    .max(15);
+const limit = Joi.number().integer();
+const offset = Joi.number().integer();
 
-const price =
-  Joi
-    .number()
-    .integer()
-    .min(10);
+const price_min = Joi.number().integer();
+const price_max = Joi.number().integer();
 
-const image =
-  Joi
-    .string()
-    .uri()
-
-const createProductShema = Joi.object({
+const createProductSchema = Joi.object({
   name: name.required(),
   price: price.required(),
-  image: image.required()
+  description: description.required(),
+  image: image.required(),
+  categoryId: categoryId.required(),
 });
 
-const updateProductShema = Joi.object({
+const updateProductSchema = Joi.object({
   name: name,
   price: price,
-  image: image
+  image: image,
+  description: description,
+  categoryId
 });
 
-const getProductShema = Joi.object({
-  id: id.required()
+const getProductSchema = Joi.object({
+  id: id.required(),
 });
 
-module.exports = {
-  createProductShema,
-  updateProductShema,
-  getProductShema
-}
+const queryProductSchema = Joi.object({
+  limit,
+  offset,
+  price,
+  price_min,
+  //Si tiene un precio minimo debe tener un precio maximo
+  price_max: price_max.when('price_min', {
+    is: Joi.number().integer().required(),
+    then: Joi.required()
+  })
+});
+
+module.exports = { createProductSchema, updateProductSchema, getProductSchema, queryProductSchema }
